@@ -105,7 +105,7 @@ public class PadController : MonoBehaviour {
 			"Broadcom Bluetooth HID",
             "PS(R) Gamepad", //Renegade PS3 Clone
             "PS3",
-            "RT-GP500"
+            "GP500"
 
 	};
 
@@ -170,34 +170,29 @@ public class PadController : MonoBehaviour {
 		
 		for(int i=0; i<mActivePadCount; i++) //iterate through attached controllers and perform mapping to internal representation
 		{
-			if(mPadName[i].Contains(mPADS[0]))	 readSHIELDPAD(i);  //shield
+            if (mPadName[i].Contains(mPADS[0])) { readSHIELDPAD(i); }       //shield
+            else if (mPadName[i].Contains(mPADS[1])) { readXBOX360(i); }    //logitech f710 (maps to xbox360)
+            else if (mPadName[i].Contains(mPADS[2])) { readXBOX360(i); }    //xbox360 wired
+            else if (mPadName[i].Contains(mPADS[3])) { readXBOX360(i); }    //afterglow xbox 360
+            else if (mPadName[i].Contains(mPADS[4])) { readSHIELDPAD(i); }  //nyko maps to same controls as shield  
+            else if (mPadName[i].Contains(mPADS[5])) { readPS3(i); }        // PS3 Compatible 
+            else if (mPadName[i].Contains(mPADS[6])) { readPS3(i); }        //PS3
+            else if (mPadName[i].Contains(mPADS[7])) { readGP500(i); }      //Bluetooth RT-500
+            else
+            {
+                readDefault(i);
+            }
 
-			if(mPadName[i].Contains(mPADS[1]))	 readXBOX360(i);    //logitech f710 (maps to xbox360)
+           filterAnalogs(i); //filter small return values 
+         }
 
-			if(mPadName[i].Contains(mPADS[2]))	 readXBOX360(i);     //xbox360 wired
+   }
+    //============================================================================================
 
-			if(mPadName[i].Contains(mPADS[3]))	 readXBOX360(i);  	//afterglow xbox 360
-
-			if(mPadName[i].Contains(mPADS[4]))	 readSHIELDPAD(i); //nyko maps to same controls as shield  
-
-            if (mPadName[i].Contains(mPADS[5])) readPS3(i); // PS3 Compatible 
-
-            if (mPadName[i].Contains(mPADS[6])) readPS3(i); //PS3
-
-            if (mPadName[i].Contains(mPADS[7])) readRT500(i); //Bluetooth RT-500
-
-            //============================================================================================
- 
-            filterAnalogs(i); //filter small return values 
-		}
-
-	}
-	//============================================================================================
-
-	//============================================================================================
-	//use this function to filter out small analog values caused by poor self centering
-	//============================================================================================
-	void filterAnalogs(int id)
+    //============================================================================================
+    //use this function to filter out small analog values caused by poor self centering
+    //============================================================================================
+    void filterAnalogs(int id)
 	{
 		float anaFloor=0.02f;  //this value seems to work pretty well on my skanky xbox controller
 
@@ -362,9 +357,9 @@ public class PadController : MonoBehaviour {
     }
 
     //============================================================================================
-    //read the RT-500 pad
+    //read the RT-GP500 pad
     //============================================================================================
-    void readRT500(int id)
+    void readGP500(int id)
     {
         string idString = (id + 1).ToString(); //internally joysticks start at 1 not 0
 
