@@ -105,7 +105,7 @@ public class PadController : MonoBehaviour {
 			"Broadcom Bluetooth HID",
             "PS(R) Gamepad", //Renegade PS3 Clone
             "PS3",
-            "RT-500"
+            "RT-GP500"
 
 	};
 
