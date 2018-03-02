@@ -26,11 +26,11 @@ PC Gamepads Supported
 
 *Afterglow XBOX 360 Controller:: "Afterglow Gamepad for Xbox 360"
 
-* PS PAD:: "Revenge PS3 Clone"
+*PS PAD:: "Revenge PS3 Clone"
 
 PS
 ----------------------
-* PS3 Pad (untested but has the same mappings as PS PAD)
+*PS3 Pad (untested but has the same mappings as PS PAD)
 
 
 Android Gamepads Supported
@@ -38,7 +38,7 @@ Android Gamepads Supported
 *NVDIA SHIELD:: "NVIDIA Corporation NVIDIA Controller v01"
 
 *Nyko PLAYPAD PRO:: "Broadcom Bluetooth HID" *
-*RT-500 BT Gamepad
+*RT-GP500 BT Gamepad
 
 Notes on Nyko PLAYPAD PRO
 ------------------
