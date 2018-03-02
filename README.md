@@ -26,6 +26,12 @@ PC Gamepads Supported
 
 *Afterglow XBOX 360 Controller:: "Afterglow Gamepad for Xbox 360"
 
+* PS PAD:: "Revenge PS3 Clone"
+
+PS
+----------------------
+* PS3 Pad (untested but has the same mappings as PS PAD)
+
 
 Android Gamepads Supported
 --------------------------
