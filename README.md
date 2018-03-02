@@ -38,6 +38,7 @@ Android Gamepads Supported
 *NVDIA SHIELD:: "NVIDIA Corporation NVIDIA Controller v01"
 
 *Nyko PLAYPAD PRO:: "Broadcom Bluetooth HID" *
+*RT-500 BT Gamepad
 
 Notes on Nyko PLAYPAD PRO
 ------------------
