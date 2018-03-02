@@ -90,16 +90,31 @@ public class MainGameObject : MonoBehaviour
 	Vector3 rtbuttonDown;
 
 	//pause button model transforms
-	public Transform pbutton_t;  
-	Vector3 pbuttonUp;
-	Vector3 pbuttonDown;
-	
+	//public Transform pbutton_t;  
+	//Vector3 pbuttonUp;
+	//Vector3 pbuttonDown;
+
+    //back button model transforms
+    public Transform bkbutton_t;
+    Vector3 bkbuttonUp;
+    Vector3 bkbuttonDown;
+
+    //middle button model transforms
+    public Transform hbutton_t;
+    Vector3 mbuttonUp;
+    Vector3 mbuttonDown;
+
+    //start button model transforms
+    public Transform sbutton_t;
+    Vector3 sbuttonUp;
+    Vector3 sbuttonDown;
 
 
-	//============================================================================================
-	//============================================================================================
-	// Use this for initialization
-	void Start () 
+
+    //============================================================================================
+    //============================================================================================
+    // Use this for initialization
+    void Start () 
 	{
 
 		//this code just gets the positions for the various controller components that are rendered
@@ -118,10 +133,13 @@ public class MainGameObject : MonoBehaviour
 		ltbutton_t = GameObject.Find("lefttop").GetComponent<Transform>();
 		rtbutton_t = GameObject.Find("righttop").GetComponent<Transform>();
 
-		pbutton_t = GameObject.Find("pause").GetComponent<Transform>();
-	
-		//object positions for analog stick models
-		leftjoystick_t = GameObject.Find("leftjoystick").GetComponent<Transform>();
+		//pbutton_t = GameObject.Find("pause").GetComponent<Transform>();
+        bkbutton_t = GameObject.Find("back").GetComponent<Transform>();
+        hbutton_t = GameObject.Find("home").GetComponent<Transform>();
+        sbutton_t = GameObject.Find("start").GetComponent<Transform>();
+
+        //object positions for analog stick models
+        leftjoystick_t = GameObject.Find("leftjoystick").GetComponent<Transform>();
 		leftjoystickUp = leftjoystick_t.localPosition;  
 		leftjoystickDown = leftjoystickUp;
 		leftjoystickDown.y -= 0.1f;
@@ -179,13 +197,23 @@ public class MainGameObject : MonoBehaviour
 		rtbuttonDown = rtbuttonUp;
 		rtbuttonDown.z += 0.1f;
 
-		//pause
-		pbuttonUp = pbutton_t.localPosition;
-		pbuttonDown = pbuttonUp;
-		pbuttonDown.y -= 0.1f;
-		
-		
-	}
+		//start
+		sbuttonUp = sbutton_t.localPosition;
+		sbuttonDown = sbuttonUp;
+		sbuttonDown.y -= 0.1f;
+
+        //middle
+        mbuttonUp = hbutton_t.localPosition;
+        mbuttonDown = mbuttonUp;
+        mbuttonDown.y -= 0.1f;
+
+        //back
+        bkbuttonUp = bkbutton_t.localPosition;
+        bkbuttonDown = bkbuttonUp;
+        bkbuttonDown.y -= 0.1f;
+
+
+    }
 	
 	//============================================================================================
 	//============================================================================================
@@ -300,13 +328,23 @@ public class MainGameObject : MonoBehaviour
 			else
 				rtbutton_t.localPosition=rtbuttonUp;
 
-			if(padC.isDown(ControllerButtons.PAUSE))
-				pbutton_t.localPosition=pbuttonDown;
+			if(padC.isDown(ControllerButtons.START))
+				sbutton_t.localPosition=sbuttonDown;
 			else
-				pbutton_t.localPosition=pbuttonUp;
-			
+				sbutton_t.localPosition=sbuttonUp;
 
-		}
+            if (padC.isDown(ControllerButtons.HOME))
+                hbutton_t.localPosition = mbuttonDown;
+            else
+                hbutton_t.localPosition = mbuttonUp;
+
+            if (padC.isDown(ControllerButtons.BACK))
+                bkbutton_t.localPosition = bkbuttonDown;
+            else
+                bkbutton_t.localPosition = bkbuttonUp;
+
+
+        }
 	}
 }
 //============================================================================================

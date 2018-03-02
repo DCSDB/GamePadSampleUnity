@@ -22,7 +22,9 @@ using System;
 		RIGHT,
 		LEFTTOP,
 		RIGHTTOP,
-		PAUSE
+		START,
+        HOME,
+        BACK
 	}
 	
 	public enum ControllerAnalogs
@@ -67,15 +69,15 @@ public	float leftTrigger;
 public	bool rightTop;
 public	float rightTrigger;
 
-public	bool pause;
 
-	
-public ControllerPacket Copy()
+public  bool back;
+public  bool home;
+public bool start;
+
+    public ControllerPacket Copy()
     {
        return (ControllerPacket)this.MemberwiseClone();
     }
-	
-	
 };
 //============================================================================================
 
@@ -86,7 +88,7 @@ public ControllerPacket Copy()
 public class PadController : MonoBehaviour {
 
 	static int mMAXCONTROLLERS = 4;
-	static string mVersion = "0.03";
+	static string mVersion = "0.04";
 
 	int mActivePadCount;  //the number of currently active game pads detected
 	ControllerPacket[] mPadData;
@@ -96,11 +98,14 @@ public class PadController : MonoBehaviour {
 
 	string[] mPADS=
 		{
-			"NVIDIA Corporation NVIDIA Controller v01",  //ignoring the version number
+			"NVIDIA Corporation NVIDIA Controller",  //ignoring the version number
 			"Controller (Wireless Gamepad F710)",
 			"XBOX 360 For Windows",
 		    "Afterglow Gamepad for Xbox 360",
-			"Broadcom Bluetooth HID" // nyco playpad pro
+			"Broadcom Bluetooth HID",
+            "PS(R) Gamepad", //Renegade PS3 Clone
+            "PS3",
+            "RT-500"
 
 	};
 
@@ -175,11 +180,16 @@ public class PadController : MonoBehaviour {
 
 			if(mPadName[i].Contains(mPADS[4]))	 readSHIELDPAD(i); //nyko maps to same controls as shield  
 
-			filterAnalogs(i); //filter small return values 
+            if (mPadName[i].Contains(mPADS[5])) readPS3(i); // PS3 Compatible 
 
+            if (mPadName[i].Contains(mPADS[6])) readPS3(i); //PS3
+
+            if (mPadName[i].Contains(mPADS[7])) readRT500(i); //Bluetooth RT-500
+
+            //============================================================================================
+ 
+            filterAnalogs(i); //filter small return values 
 		}
-
-
 
 	}
 	//============================================================================================
@@ -189,7 +199,7 @@ public class PadController : MonoBehaviour {
 	//============================================================================================
 	void filterAnalogs(int id)
 	{
-		float anaFloor=0.2f;  //this value seems to work pretty well on my skanky xbox controller
+		float anaFloor=0.02f;  //this value seems to work pretty well on my skanky xbox controller
 
 		if(Mathf.Abs(mPadData[id].leftStickX)<anaFloor) 
 			mPadData[id].leftStickX=0.0f;
@@ -250,24 +260,64 @@ public class PadController : MonoBehaviour {
 		mPadData[id].leftTrigger=Input.GetAxis(idString+"_9th axis");
 		mPadData[id].rightTrigger=Input.GetAxis(idString+"_10th axis");
 
-		mPadData[id].pause = Input.GetButton("joystick "+idString+" button 7")? true: false; 
-
-		    
-
-	}
-	//============================================================================================
+		mPadData[id].start = Input.GetButton("joystick "+idString+" button 7")? true: false;
+        mPadData[id].back = Input.GetButton("joystick " + idString + " button 6") ? true : false;
+        mPadData[id].home =  false; //Doesn't have button
 
 
 
+    }
+    //============================================================================================
 
-	//============================================================================================
-	//read the shield pad
-	//============================================================================================
-	void readSHIELDPAD(int id)
+    //============================================================================================
+    //read the xbox 360 for windows controller
+    //============================================================================================
+    void readPS3(int id)
+    {
+        //http://wiki.etc.cmu.edu/unity3d/index.php/Joystick/Controller#Generic_Controller
+
+        string idString = (id + 1).ToString(); //internally joysticks start at 1 not 0
+
+        mPadData[id].butX = Input.GetButton("joystick " + idString + " button 0") ? true : false;
+        mPadData[id].butY = Input.GetButton("joystick " + idString + " button 3") ? true : false;
+        mPadData[id].butA = Input.GetButton("joystick " + idString + " button 1") ? true : false;
+        mPadData[id].butB = Input.GetButton("joystick " + idString + " button 2") ? true : false;
+
+        mPadData[id].leftTop = Input.GetButton("joystick " + idString + " button 4") ? true : false;
+        mPadData[id].rightTop = Input.GetButton("joystick " + idString + " button 5") ? true : false;
+
+        mPadData[id].leftAsDown = Input.GetButton("joystick " + idString + " button 10") ? true : false;
+        mPadData[id].rightAsDown = Input.GetButton("joystick " + idString + " button 11") ? true : false;
+
+        mPadData[id].leftStickX = Input.GetAxis(idString + "_X axis");
+        mPadData[id].leftStickY = Input.GetAxis(idString + "_Y axis");
+
+        mPadData[id].rightStickX = Input.GetAxis(idString + "_3rd axis");
+        mPadData[id].rightStickY = Input.GetAxis(idString + "_4th axis");
+
+        float dPadX = Input.GetAxis(idString + "_5th axis");
+        mPadData[id].left = (dPadX < 0) ? true : false;
+        mPadData[id].right = (dPadX > 0) ? true : false;
+
+        float dPadY = Input.GetAxis(idString + "_6th axis");
+        mPadData[id].up = (dPadY > 0) ? true : false;
+        mPadData[id].down = (dPadY < 0) ? true : false;
+
+        mPadData[id].leftTrigger = Input.GetButton("joystick " + idString + " button 6") ? 1 : 0;
+        mPadData[id].rightTrigger = Input.GetButton("joystick " + idString + " button 7") ? 1 : 0;
+
+        mPadData[id].back = Input.GetButton("joystick " + idString + " button 8") ? true : false; //SELECT
+        mPadData[id].start = Input.GetButton("joystick " + idString + " button 9") ? true : false;
+        mPadData[id].home = Input.GetButton("joystick " + idString + " button 12") ? true : false; //PS
+    }
+
+
+    //============================================================================================
+    //read the shield pad
+    //============================================================================================
+    void readSHIELDPAD(int id)
 	{
-
 		string idString = (id+1).ToString(); //internally joysticks start at 1 not 0
-		
 		
 		//http://docs.unity3d.com/Documentation/Manual/Input.html
 		//		joystick Buttons (from any joystick): "joystick button 0", "joystick button 1", "joystick button 2", ...
@@ -304,18 +354,107 @@ public class PadController : MonoBehaviour {
 		mPadData[id].leftTrigger=Input.GetAxis(idString+"_13th axis");
 		mPadData[id].rightTrigger=Input.GetAxis(idString+"_12th axis");
 
-		mPadData[id].pause = Input.GetButton("joystick "+idString+" button 10")? true: false; 
-
-				
-	}
-	//============================================================================================
+        mPadData[id].back = Input.GetButton("joystick " + idString + " button 11") ? true : false || Input.GetKeyDown(KeyCode.Escape);
+        mPadData[id].home =  false; //haven't tested but bound to home function
+        mPadData[id].start = Input.GetButton("joystick " + idString + " button 10") ? true : false;
 
 
+    }
+
+    //============================================================================================
+    //read the RT-500 pad
+    //============================================================================================
+    void readRT500(int id)
+    {
+        string idString = (id + 1).ToString(); //internally joysticks start at 1 not 0
+
+        mPadData[id].butX = Input.GetButton("joystick " + idString + " button 2") ? true : false;
+        mPadData[id].butY = Input.GetButton("joystick " + idString + " button 3") ? true : false;
+        mPadData[id].butA = Input.GetButton("joystick " + idString + " button 0") ? true : false;
+        mPadData[id].butB = Input.GetButton("joystick " + idString + " button 1") ? true : false;
+
+        mPadData[id].leftTop = Input.GetButton("joystick " + idString + " button 4") ? true : false;
+        mPadData[id].rightTop = Input.GetButton("joystick " + idString + " button 5") ? true : false;
+
+        mPadData[id].leftAsDown = Input.GetButton("joystick " + idString + " button 8") ? true : false;
+        mPadData[id].rightAsDown = Input.GetButton("joystick " + idString + " button 9") ? true : false;
+
+        mPadData[id].leftStickX = Input.GetAxis(idString + "_X axis");
+        mPadData[id].leftStickY = Input.GetAxis(idString + "_Y axis");
+
+        mPadData[id].rightStickX = Input.GetAxis(idString + "_3rd axis");
+        mPadData[id].rightStickY = Input.GetAxis(idString + "_4th axis");
+
+        float dPadX = Input.GetAxis(idString + "_5th axis");
+        mPadData[id].left = (dPadX < 0) ? true : false;
+        mPadData[id].right = (dPadX > 0) ? true : false;
+
+        float dPadY = Input.GetAxis(idString + "_6th axis");
+        mPadData[id].up = (dPadY < 0) ? true : false;
+        mPadData[id].down = (dPadY > 0) ? true : false;
+
+ //       mPadData[id].leftTrigger = Input.GetAxis(idString + "_13th axis");
+ //       mPadData[id].rightTrigger = Input.GetAxis(idString + "_12th axis");
+
+        mPadData[id].leftTrigger = Input.GetButton("joystick " + idString + " button 6") ? 1 : 0;
+        mPadData[id].rightTrigger = Input.GetButton("joystick " + idString + " button 7") ? 1 : 0;
 
 
-	//============================================================================================
-	//============================================================================================
-	string DebugPadData(int id)
+        mPadData[id].back = Input.GetButton("joystick " + idString + " button 11") ? true : false || Input.GetKeyDown(KeyCode.Escape);
+        mPadData[id].home = false; //haven't tested but bound to home function
+        mPadData[id].start = Input.GetButton("joystick " + idString + " button 10") ? true : false;
+
+
+    }
+
+
+    //============================================================================================
+    //read default 
+    // Used when joystick is unknown. Checks various axis for trigger buttons.
+    //Not currently implemented
+    //============================================================================================
+    void readDefault(int id)
+    {
+        string idString = (id + 1).ToString(); //internally joysticks start at 1 not 0
+
+        mPadData[id].butX = Input.GetButton("joystick " + idString + " button 2") ? true : false;
+        mPadData[id].butY = Input.GetButton("joystick " + idString + " button 3") ? true : false;
+        mPadData[id].butA = Input.GetButton("joystick " + idString + " button 0") ? true : false;
+        mPadData[id].butB = Input.GetButton("joystick " + idString + " button 1") ? true : false;
+
+        mPadData[id].leftTop = Input.GetButton("joystick " + idString + " button 4") ? true : false;
+        mPadData[id].rightTop = Input.GetButton("joystick " + idString + " button 5") ? true : false;
+
+        mPadData[id].leftAsDown = Input.GetButton("joystick " + idString + " button 8") ? true : false;
+        mPadData[id].rightAsDown = Input.GetButton("joystick " + idString + " button 9") ? true : false;
+
+        mPadData[id].leftStickX = Input.GetAxis(idString + "_X axis");
+        mPadData[id].leftStickY = Input.GetAxis(idString + "_Y axis");
+
+        mPadData[id].rightStickX = Input.GetAxis(idString + "_3rd axis");
+        mPadData[id].rightStickY = Input.GetAxis(idString + "_4th axis");
+
+        float dPadX = Input.GetAxis(idString + "_5th axis");
+        mPadData[id].left = (dPadX < 0) ? true : false;
+        mPadData[id].right = (dPadX > 0) ? true : false;
+
+        float dPadY = Input.GetAxis(idString + "_6th axis");
+        mPadData[id].up = (dPadY < 0) ? true : false;
+        mPadData[id].down = (dPadY > 0) ? true : false;
+
+        mPadData[id].leftTrigger =  (Input.GetButton("joystick " + idString + " button 6") || Input.GetAxis(idString + "_13th axis")>0 ? 1 :0);
+        mPadData[id].rightTrigger = (Input.GetButton("joystick " + idString + " button 7") || Input.GetAxis(idString + "_12th axis")>0 ? 1 :0);
+
+        mPadData[id].back = Input.GetButton("joystick " + idString + " button 11") ? true : false || Input.GetKeyDown(KeyCode.Escape);
+        mPadData[id].home = Input.GetButton("joystick " + idString + " button 12") ? true : false; //Probabally never used.
+        mPadData[id].start = Input.GetButton("joystick " + idString + " button 10") ? true : false;
+
+
+    }
+
+    //============================================================================================
+    //============================================================================================
+    string DebugPadData(int id)
 	{
 		string txtLine1= " ";
 
@@ -331,8 +470,10 @@ public class PadController : MonoBehaviour {
 		txtLine1 += " RT:"+ (isDown(id,ControllerButtons.RIGHTTOP) ? "1": "0");
 		txtLine1 += " LAS:"+ (isDown(id,ControllerButtons.LAS_BUTTON) ? "1": "0");
 		txtLine1 += " RAS:"+ (isDown(id,ControllerButtons.RAS_BUTTON) ? "1": "0");
-		txtLine1 += " Pause:"+ (isDown(id,ControllerButtons.PAUSE) ? "1": "0");
-		txtLine1+= "\n";
+		txtLine1 += " Start:"+ (isDown(id,ControllerButtons.START) ? "1": "0");
+        txtLine1 += " Home:" + (isDown(id, ControllerButtons.HOME) ? "1" : "0");
+        txtLine1 += " Back:" + (isDown(id, ControllerButtons.BACK) ? "1" : "0");
+        txtLine1 += "\n";
 		txtLine1 += "LX:"+getAnalog(id,ControllerAnalogs.LEFTX).ToString();
 		txtLine1 += " LY:"+getAnalog(id,ControllerAnalogs.LEFTY).ToString();
 		txtLine1 += " RX:"+getAnalog(id,ControllerAnalogs.RIGHTX).ToString();
@@ -486,10 +627,15 @@ public class PadController : MonoBehaviour {
 		case ControllerButtons.RIGHTTOP:
 			return(mPadData[id].rightTop);
 
-		case ControllerButtons.PAUSE:
-			return(mPadData[id].pause);
+		case ControllerButtons.START:
+			return(mPadData[id].start);
 
-		default:  
+        case ControllerButtons.HOME:
+                return (mPadData[id].home);
+
+        case ControllerButtons.BACK:
+                return (mPadData[id].back);
+            default:  
 			break;
 		}
 	return false;
@@ -564,12 +710,22 @@ public class PadController : MonoBehaviour {
 			old =  !mPadDataOld[id].rightTop;
 			return(curr&&old);
 
-		case ControllerButtons.PAUSE:
-			curr = mPadData[id].pause;
-			old =  !mPadDataOld[id].pause;
+		case ControllerButtons.START:
+			curr = mPadData[id].start;
+			old =  !mPadDataOld[id].start;
 			return(curr&&old);
 
-		default:  
+         case ControllerButtons.HOME:
+                curr = mPadData[id].home;
+                old = !mPadDataOld[id].home;
+                return (curr && old);
+
+        case ControllerButtons.BACK:
+                curr = mPadData[id].back;
+                old = !mPadDataOld[id].back;
+                return (curr && old);
+
+            default:  
 			break;
 		}
 	return false;
