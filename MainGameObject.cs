@@ -100,7 +100,7 @@ public class MainGameObject : MonoBehaviour
     Vector3 bkbuttonDown;
 
     //middle button model transforms
-    public Transform mbutton_t;
+    public Transform hbutton_t;
     Vector3 mbuttonUp;
     Vector3 mbuttonDown;
 
@@ -135,7 +135,7 @@ public class MainGameObject : MonoBehaviour
 
 		//pbutton_t = GameObject.Find("pause").GetComponent<Transform>();
         bkbutton_t = GameObject.Find("back").GetComponent<Transform>();
-        mbutton_t = GameObject.Find("middle").GetComponent<Transform>();
+        hbutton_t = GameObject.Find("home").GetComponent<Transform>();
         sbutton_t = GameObject.Find("start").GetComponent<Transform>();
 
         //object positions for analog stick models
@@ -203,7 +203,7 @@ public class MainGameObject : MonoBehaviour
 		sbuttonDown.y -= 0.1f;
 
         //middle
-        mbuttonUp = mbutton_t.localPosition;
+        mbuttonUp = hbutton_t.localPosition;
         mbuttonDown = mbuttonUp;
         mbuttonDown.y -= 0.1f;
 
@@ -333,10 +333,10 @@ public class MainGameObject : MonoBehaviour
 			else
 				sbutton_t.localPosition=sbuttonUp;
 
-            if (padC.isDown(ControllerButtons.MIDDLE))
-                mbutton_t.localPosition = mbuttonDown;
+            if (padC.isDown(ControllerButtons.HOME))
+                hbutton_t.localPosition = mbuttonDown;
             else
-                mbutton_t.localPosition = mbuttonUp;
+                hbutton_t.localPosition = mbuttonUp;
 
             if (padC.isDown(ControllerButtons.BACK))
                 bkbutton_t.localPosition = bkbuttonDown;
